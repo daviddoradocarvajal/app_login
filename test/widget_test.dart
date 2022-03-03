@@ -9,22 +9,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:widget_login/main.dart';
+import 'package:widget_login/miformulario.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  
+  testWidgets('Pruebas sobre componente', (WidgetTester tester) async {    
+    MiFormulario formulario = MiFormulario(
+      onPressed: (() => (() {})));
+      
+    // Construye la aplicacion para el marco de pruebas
+    await tester.pumpWidget(MaterialApp(
+       home: Material(
+         child: Directionality(
+           textDirection: TextDirection.ltr,
+           child: Center(
+             child:formulario,
+           ),
+         ),
+       ),
+     ));
+     expect(find.byType(MiFormulario), findsWidgets);
+     expect(find.byType(Form), findsWidgets);
   });
 }
