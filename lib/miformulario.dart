@@ -30,6 +30,7 @@ class MiFormulario extends StatelessWidget{
           ),
           TextFormField(
             onChanged: ((newValue) => pass = newValue),
+            obscureText: true,
             decoration: const InputDecoration(              
               border: OutlineInputBorder(),
               hintText: 'Enter your password',
