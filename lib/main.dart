@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:widget_login/miformulario.dart';
 // Método main de la aplicación
@@ -39,21 +41,41 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     // Devuelve un Widget MiFormulario que es un formulario personalizado, recibe como parámetro
     // un evento onPressed para el botón del formulario
     return  MiFormulario(      
-      onPressed: (() => validarButton(MiFormulario.email,MiFormulario.pass)),
+      onPressed: (() => validarRol(MiFormulario.email,MiFormulario.pass)),
 
     );
+  }
+  validarRol(String? email,String? pass){
+    if (validarButton(email, pass)){
+      if (email == 'admin@admin.es' && pass == 'Admin01'){
+        mostarMensaje("Admin", "Admin");
+        return true;
+      }
+      if (email == 'user@admin.es' && pass == 'User01'){
+        mostarMensaje("Usuario", "Usuario");
+        return true;
+      }
+      else {
+        mostarMensaje("Usuario no reconocido", "Usuario no reconocido");
+        return false;
+      }
+    }
+    
   }
   // Método que se va a ejecutar como evento que realiza una comprobación del correo y contraseña
   // introducidos en el formulario
   validarButton(String? email, String? pass){
     // Se realizan comprobaciónes de login (en este caso ficticias) y devuelve un cuadro de dialogo
     if (email == null || email.isEmpty) {
-      return mostarMensaje('Error', 'Debe introducir un e-mail');         
+      mostarMensaje('Error', 'Debe introducir un e-mail');
+      return false;
     }
-    if (pass==null || pass.isEmpty || pass!='aaa'){
-      return mostarMensaje('Error', 'Contraseña incorrecta');
+    if (pass==null || pass.isEmpty){
+      mostarMensaje('Error', 'Contraseña vacia');
+      return false;
     }
-    return mostarMensaje('', 'Login correcto');
+    mostarMensaje('', 'Login correcto');
+    return true;
   }
   // Método encargado de devolver un cuadro de diálogo
   mostarMensaje(String titulo, String mensaje){    
