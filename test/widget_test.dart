@@ -28,7 +28,8 @@ void main() {
          ),
        ),
      ));
-     expect(find.byType(MiFormulario), findsWidgets);
-     expect(find.byType(Form), findsWidgets);
+     expect(find.byType(MiFormulario), findsOneWidget);
+     expect(find.byType(Form), findsOneWidget);
+     expect(find.text("Enviar"), findsWidgets);
   });
 }
