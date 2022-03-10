@@ -41,7 +41,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     // Devuelve un Widget MiFormulario que es un formulario personalizado, recibe como parámetro
     // un evento onPressed para el botón del formulario
     return  MiFormulario(      
-      onPressed: (() => validarRol(MiFormulario.email,MiFormulario.pass)),
+      onPressed: (() => validarButton(MiFormulario.email,MiFormulario.pass)),
 
     );
   }
@@ -65,13 +65,26 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // Método que se va a ejecutar como evento que realiza una comprobación del correo y contraseña
   // introducidos en el formulario
   validarButton(String? email, String? pass){
-    // Se realizan comprobaciónes de login (en este caso ficticias) y devuelve un cuadro de dialogo
-    if (email == null || email.isEmpty) {
+    // Patron de expresion regular de un email
+    String patternEmail = r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    // Patron de expresion regular de una contraseña
+    String patternPasswd = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+    // Se asigna al objeto RegExp el patron para comprobar la expresion del email
+    RegExp regex = RegExp(patternEmail);    
+    // Se realizan comprobaciones de que el email no esta en blanco y sigue el patron especificado
+    if (email == null || email.isEmpty || regex.hasMatch(email)==false ) {
       mostarMensaje('Error', 'Debe introducir un e-mail');
       return false;
     }
-    if (pass==null || pass.isEmpty){
+    // Se asigna al objeto RegExp el patron para comprobar la expresion de la contraseña
+    regex = RegExp(patternPasswd);
+    // Se realizan comprobaciones de que la constraseña no esta en blanco y sigue el patron especificado
+    if (pass==null || pass.isEmpty ){
       mostarMensaje('Error', 'Contraseña vacia');
+      return false;
+    }
+    if (regex.hasMatch(pass)==false || pass.length < 8){
+      mostarMensaje('Error', 'Debe introducir una contraseña con 8 o mas carácteres, 1 minuscula, 1 mayuscula, 1 numero y uno de los siguientes carácteres ( ! @ # \$ & * ~)');
       return false;
     }
     mostarMensaje('', 'Login correcto');

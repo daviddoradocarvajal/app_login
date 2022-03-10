@@ -35,12 +35,7 @@ class MiFormulario extends StatelessWidget{
               border: OutlineInputBorder(),
               hintText: 'Enter your password',
             ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty || value != 'aaa') {
-                return 'Contraseña incorrecta';
-              }
-              return null;
-            },
+            
           ),
           
           Padding(
