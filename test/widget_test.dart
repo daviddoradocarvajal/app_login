@@ -14,7 +14,9 @@ void main() {
   
   testWidgets('Pruebas sobre componente', (WidgetTester tester) async {    
     MiFormulario formulario = MiFormulario(
-      onPressed: (() => (() {})));
+      onPressed: (() => (() {})),
+      onPressed2: (() => (() {}))
+      );
       
     // Construye la aplicacion para el marco de pruebas
     await tester.pumpWidget(MaterialApp(

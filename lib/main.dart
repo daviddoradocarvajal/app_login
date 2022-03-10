@@ -1,7 +1,8 @@
-import 'dart:math';
+import 'package:mysql1/mysql1.dart';
 
 import 'package:flutter/material.dart';
 import 'package:widget_login/miformulario.dart';
+import 'package:widget_login/user.dart';
 // Método main de la aplicación
 void main() => runApp(const MyApp());
 
@@ -41,27 +42,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     // Devuelve un Widget MiFormulario que es un formulario personalizado, recibe como parámetro
     // un evento onPressed para el botón del formulario
     return  MiFormulario(      
-      onPressed: (() => validarButton(MiFormulario.email,MiFormulario.pass)),
+      onPressed: (() => {
+        if(validarButton(MiFormulario.email,MiFormulario.pass))
+        {
+          recuperarUsuario(MiFormulario.email.toString(), MiFormulario.pass.toString())
+        }
+      }),      
+      onPressed2: (() => {
+        if (validarButton(MiFormulario.email, MiFormulario.pass)){
+          registrarUsuario(MiFormulario.email.toString(),MiFormulario.pass.toString())
+        }
+      }),
 
     );
   }
-  validarRol(String? email,String? pass){
-    if (validarButton(email, pass)){
-      if (email == 'admin@admin.es' && pass == 'Admin01'){
-        mostarMensaje("Admin", "Admin");
-        return true;
-      }
-      if (email == 'user@admin.es' && pass == 'User01'){
-        mostarMensaje("Usuario", "Usuario");
-        return true;
-      }
-      else {
-        mostarMensaje("Usuario no reconocido", "Usuario no reconocido");
-        return false;
-      }
-    }
-    
-  }
+  
   // Método que se va a ejecutar como evento que realiza una comprobación del correo y contraseña
   // introducidos en el formulario
   validarButton(String? email, String? pass){
@@ -86,36 +81,78 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     if (regex.hasMatch(pass)==false || pass.length < 8){
       mostarMensaje('Error', 'Debe introducir una contraseña con 8 o mas carácteres, 1 minuscula, 1 mayuscula, 1 numero y uno de los siguientes carácteres ( ! @ # \$ & * ~)');
       return false;
-    }
-    mostarMensaje('', 'Login correcto');
+    }    
     return true;
   }
   // Método encargado de devolver un cuadro de diálogo
   mostarMensaje(String titulo, String mensaje){    
     return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // user must tap button!
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(titulo),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(mensaje),
-            ],
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titulo),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(mensaje),
+              ],
+            ),
           ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Aceptar'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );    
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );    
+  }
+  // Método que se encarga de realizar una petición http una vez el login ha sido dado como válido
+  Future recuperarUsuario(String email, String pass) async {
+    User user = User("email", "pass", "rol");
+    var conn = await MySqlConnection.connect(ConnectionSettings(
+      host: '10.0.2.2',
+      port: 3307,
+      db: 'usuarios',
+      user: 'root',
+    ));
+    var result = await conn.query("SELECT email,aes_decrypt(pass,'contraseniaaes'),rol FROM usuario where email='"+email+"'");
+    if (result.isNotEmpty){
+      for (var data in result){
+      user = User(data[0].toString(), data[1].toString(), data[2].toString());
+     }
+     if (user.rol=="administrador"){
+      httpObtener();
+     }
+      if (user.rol=="usuario"){
+      mostarMensaje("Permisos insuficientes","usuario no tienes acceso a la parte de administrador");
+     }
+    }else {
+      mostarMensaje("Error", "Usuario no encontrado");
+    }
+    
+    
+  }
+  Future registrarUsuario(String email, String pass) async {
+    var conn = await MySqlConnection.connect(ConnectionSettings(
+      host: '10.0.2.2',
+      port: 3307,
+      db: 'usuarios',
+      user: 'root',
+    ));
+    
+    await conn.query("Insert into usuario (email,pass,rol) values ('"+email+"',aes_encrypt('"+pass+"','contraseniaaes'),'usuario')").then((value) => null);
+    conn.close();
+  }  
+  httpObtener(){
+
+  }
+  transformarImagen(){
+
   }
 
 }
