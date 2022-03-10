@@ -1,5 +1,7 @@
-import 'package:mysql1/mysql1.dart';
+import 'dart:io';
 
+import 'package:mysql1/mysql1.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:widget_login/miformulario.dart';
 import 'package:widget_login/user.dart';
@@ -113,7 +115,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
   // Método que se encarga de realizar una petición http una vez el login ha sido dado como válido
   Future recuperarUsuario(String email, String pass) async {
-    User user = User("email", "pass", "rol");
+    User user = const User("email", "pass", "rol");
     var conn = await MySqlConnection.connect(ConnectionSettings(
       host: '10.0.2.2',
       port: 3307,
@@ -147,10 +149,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     
     await conn.query("Insert into usuario (email,pass,rol) values ('"+email+"',aes_encrypt('"+pass+"','contraseniaaes'),'usuario')").then((value) => null);
     conn.close();
-  }  
-  httpObtener(){
-
   }
+  /*
+   * Método encargado de las peticiones http
+   */
+  httpObtener() async {
+    var uri = Uri.https('https://picsum.photos', '/200');
+    var response = await http.get(uri);
+    
+    
+  }
+  /*
+   * Método encargado de transformar la imagen que se obtiene a través de http a otro formato 
+   */
   transformarImagen(){
 
   }
