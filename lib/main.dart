@@ -40,16 +40,16 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     // Devuelve un Widget MiFormulario que es un formulario personalizado, recibe como parámetro
-    // un evento onPressed para el botón del formulario
+    // dos eventos onPressed uno para el login y otro para el registro
     return  MiFormulario(      
-      onPressed: (() => {
-        if(validarButton(MiFormulario.email,MiFormulario.pass))
+      loginEvent: (() => {
+        if(validateData(MiFormulario.email,MiFormulario.pass))
         {
           recuperarUsuario(MiFormulario.email.toString(), MiFormulario.pass.toString())
         }
       }),      
-      onPressed2: (() => {
-        if (validarButton(MiFormulario.email, MiFormulario.pass)){
+      registerEvent: (() => {
+        if (validateData(MiFormulario.email, MiFormulario.pass)){
           registrarUsuario(MiFormulario.email.toString(),MiFormulario.pass.toString())
         }
       }),
@@ -57,9 +57,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
   
-  // Método que se va a ejecutar como evento que realiza una comprobación del correo y contraseña
-  // introducidos en el formulario
-  validarButton(String? email, String? pass){
+  // Método que se va a ejecutar para comprobar los datos del formulario
+  validateData(String? email, String? pass){
     // Patron de expresion regular de un email
     String patternEmail = r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     // Patron de expresion regular de una contraseña
@@ -84,17 +83,20 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     }    
     return true;
   }
-  // Método encargado de devolver un cuadro de diálogo
+
+  // Método encargado de devolver un cuadro de diálogo para comunicaciones con el usuario
   mostarMensaje(String titulo, String mensaje){    
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false, // Obliga a pulsar el botón para cerrar el cuadro
       builder: (BuildContext context) {
         return AlertDialog(
+          // El titulo del cuadro se asigna con el primer parámetro
           title: Text(titulo),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
+                // El texto se asigna con el segundo parámetro
                 Text(mensaje),
               ],
             ),
@@ -111,47 +113,65 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       },
     );    
   }
-  // Método que se encarga de realizar una petición http una vez el login ha sido dado como válido
+
+  /*
+   * Método encargado de recuperar un usuario de la base de datos, en funcion de su rol navegara a otra
+   * ventana
+   */ 
   Future recuperarUsuario(String email, String pass) async {
+    // Se crea un objeto usuario
     User user = const User("email", "pass", "rol");
+    // Conexión con la base de datos
     var conn = await MySqlConnection.connect(ConnectionSettings(
       host: '10.0.2.2',
       port: 3307,
       db: 'usuarios',
       user: 'root',
     ));
+    // Se obtiene el resultado de la consulta, la contraseña deber ser descifrada con el método aes_decrypt
     var result = await conn.query("SELECT email,aes_decrypt(pass,'contraseniaaes'),rol FROM usuario where email='"+email+"'");
+    // Si hay mas de 1 coincidencia devuelve un null 
+    if (result.length>=2) return null;
+    // Si encuentra un usuario lo guarda en una variable
     if (result.isNotEmpty){
       for (var data in result){
       user = User(data[0].toString(), data[1].toString(), data[2].toString());
      }
+     // Comprueba el rol del usuario y lanza una ventana nueva en función de su rol
      if (user.rol=="administrador"){
       Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-        return const Bienvenida(user: "administrador");
+        return const Bienvenida(rol: "administrador");
         }
       ));
      }
      if (user.rol=="usuario"){
       Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-        return const Bienvenida(user: "usuario");
+        return const Bienvenida(rol: "usuario");
         }
       ));
      }
+     //Si no encuentra ningun usuario muestra un mensaje
     }else {
       mostarMensaje("Error", "Usuario no encontrado");
     }
-    
-    
+    // Cierre de la conexión
+    conn.close();    
   }
+  // Método encargado de registrar un usuario en la base de datos
   Future registrarUsuario(String email, String pass) async {
+    // Conexión con la base de datos
     var conn = await MySqlConnection.connect(ConnectionSettings(
       host: '10.0.2.2',
       port: 3307,
       db: 'usuarios',
       user: 'root',
     ));
-    
+    /*
+     * Se lanza la consulta insert, se usa un then para esperar a su finalizacion antes de cerrar la conexion,
+     * la contraseña se cifra antes de ser enviada 
+     */ 
     await conn.query("Insert into usuario (email,pass,rol) values ('"+email+"',aes_encrypt('"+pass+"','contraseniaaes'),'usuario')").then((value) => null);
+    // Cierre de la conexión
     conn.close();
   }
   

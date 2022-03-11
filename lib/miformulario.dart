@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
  * En flutter todo se considera Widget (Al igual que Java con Object)
  */
 class MiFormulario extends StatelessWidget{
-  MiFormulario({Key? key,required this.onPressed,required this.onPressed2}) : super(key: key);
+  MiFormulario({Key? key,required this.loginEvent,required this.registerEvent}) : super(key: key);
   final _formKey = GlobalKey<FormState>();
-  final GestureTapCallback onPressed;
-  final GestureTapCallback onPressed2;
+  final GestureTapCallback loginEvent;
+  final GestureTapCallback registerEvent;
   static String? email;
   static String? pass;
 
@@ -41,13 +41,14 @@ class MiFormulario extends StatelessWidget{
           
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
+            // Widget boton con el evento onPressed encargado del login
             child: ElevatedButton(              
-              onPressed: onPressed,
+              onPressed: loginEvent,
               child: const Text('Loguear'),
             ),
           ),
-          // Widget boton con el método onPressed2 Todo Cambiar nombre
-          ElevatedButton(onPressed: onPressed2, 
+          // Widget boton con el evento onPressed encargado del registro de un usuario
+          ElevatedButton(onPressed: registerEvent, 
           child: const Text("Registrar")
           ),
         ],
