@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:mysql1/mysql1.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:widget_login/bienvenida.dart';
 import 'package:widget_login/miformulario.dart';
 import 'package:widget_login/user.dart';
 // Método main de la aplicación
@@ -128,10 +126,16 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       user = User(data[0].toString(), data[1].toString(), data[2].toString());
      }
      if (user.rol=="administrador"){
-      httpObtener();
+      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+        return const Bienvenida(user: "administrador");
+        }
+      ));
      }
-      if (user.rol=="usuario"){
-      mostarMensaje("Permisos insuficientes","usuario no tienes acceso a la parte de administrador");
+     if (user.rol=="usuario"){
+      Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+        return const Bienvenida(user: "usuario");
+        }
+      ));
      }
     }else {
       mostarMensaje("Error", "Usuario no encontrado");
@@ -150,20 +154,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     await conn.query("Insert into usuario (email,pass,rol) values ('"+email+"',aes_encrypt('"+pass+"','contraseniaaes'),'usuario')").then((value) => null);
     conn.close();
   }
-  /*
-   * Método encargado de las peticiones http
-   */
-  httpObtener() async {
-    var uri = Uri.https('https://picsum.photos', '/200');
-    var response = await http.get(uri);
-    
-    
-  }
-  /*
-   * Método encargado de transformar la imagen que se obtiene a través de http a otro formato 
-   */
-  transformarImagen(){
-
-  }
+  
 
 }
