@@ -70,12 +70,14 @@ class Bienvenida extends StatelessWidget{
     imagconverter.Image? imagdata =  imagconverter.decodeJpg(response.bodyBytes);
     // Se redimensiona la imagen
     imagconverter.Image? thumbnail = imagconverter.copyResize(imagdata!, width: 120); 
-    // Se obtiene el directorio del almacenamiento externo 
-    final dir = await rutaprov.getApplicationDocumentsDirectory();
-    // Se declara como ruta el directorio concatenando el nombre
-    final path = '${dir.path}/imagenImportada.png';
-    // Se guarda la imagen en la ruta como archivo png
-    File(path).writeAsBytesSync(imagconverter.encodePng(thumbnail),flush:true);
+    // Si la plataforma es Android 
+    if (Platform.isAndroid){      
+      // Se declara la ruta a guardar el archivo
+      const path = '/storage/self/primary/DCIM/imagenImportada.png';
+      // Se guarda la imagen en la ruta como archivo png
+      File(path).writeAsBytesSync(imagconverter.encodePng(thumbnail),flush:true);
+    }
+    
   
   }
   

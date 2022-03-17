@@ -123,7 +123,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     User user = const User("email", "pass", "rol");
     // Conexión con la base de datos
     var conn = await MySqlConnection.connect(ConnectionSettings(
-      host: '10.0.2.2',
+      host: '192.168.1.113',
       port: 3307,
       db: 'usuarios',
       user: 'root',
@@ -161,7 +161,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Future registrarUsuario(String email, String pass) async {
     // Conexión con la base de datos
     var conn = await MySqlConnection.connect(ConnectionSettings(
-      host: '10.0.2.2',
+      host: '192.168.1.113',
       port: 3307,
       db: 'usuarios',
       user: 'root',
