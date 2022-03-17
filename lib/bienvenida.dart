@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as imagconverter;
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart' as rutaprov;
+
 
 /*
  * Clase encargada de construir una ventana con una imagen obtenida de una api publica, en funcion
@@ -19,12 +19,11 @@ class Bienvenida extends StatelessWidget{
     Widget bodyBienvenida; 
     // Si el rol es usuario
     if(rol=="usuario"){
-      // Se asigna a bodyBienvenida un Widget Column con un Widget Image
-      bodyBienvenida = Column(
-        children: <Widget>[
+      // Se asigna a bodyBienvenida un Widget Center con un Widget Image
+      bodyBienvenida = Center(
+        child: 
           // Se obtiene la imagen y se muestra en un  widget Image
-          Image.network('https://picsum.photos/200')
-        ],
+          Image.network('https://picsum.photos/200'),
       );
       // Si el rol es administrador
     }else if(rol=="administrador"){
