@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
  * la imagen jpg en png. Hace uso de la api picsum que devuelve una imagen aleatoria cada vez
  */
 class Bienvenida extends StatelessWidget{
+  // Constructor de la clase
   const Bienvenida({Key?key,required this.rol}): super(key:key);
   final String rol;
   

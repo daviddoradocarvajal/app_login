@@ -60,7 +60,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   // Método que se va a ejecutar para comprobar los datos del formulario
   validateData(String? email, String? pass){
     // Patron de expresion regular de un email
-    String patternEmail = r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    String patternEmail = r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|'
+    r'(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     // Patron de expresion regular de una contraseña
     String patternPasswd = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
     // Se asigna al objeto RegExp el patron para comprobar la expresion del email
@@ -78,7 +79,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       return false;
     }
     if (regex.hasMatch(pass)==false || pass.length < 8){
-      mostarMensaje('Error', 'Debe introducir una contraseña con 8 o mas carácteres, 1 minuscula, 1 mayuscula, 1 numero y uno de los siguientes carácteres ( ! @ # \$ & * ~)');
+      mostarMensaje('Error', 'Debe introducir una contraseña con 8 o mas carácteres, '
+      '1 minuscula, 1 mayuscula, 1 numero y uno de los siguientes carácteres ( ! @ # \$ & * ~)');
       return false;
     }    
     return true;
@@ -129,7 +131,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       user: 'root',
     ));
     // Se obtiene el resultado de la consulta, la contraseña deber ser descifrada con el método aes_decrypt
-    var result = await conn.query("SELECT email,aes_decrypt(pass,'contraseniaaes'),rol FROM usuario where email='"+email+"'");
+    var result = await conn.query("SELECT email,aes_decrypt(pass,'contraseniaaes'),"
+    "rol FROM usuario where email='"+email+"'");
     // Si hay mas de 1 coincidencia devuelve un null 
     if (result.length>=2) return null;
     // Si encuentra un usuario lo guarda en una variable
@@ -167,10 +170,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       user: 'root',
     ));
     /*
-     * Se lanza la consulta insert, se usa un then para esperar a su finalizacion antes de cerrar la conexion,
-     * la contraseña se cifra antes de ser enviada 
+     * Se lanza la consulta insert, se usa un then para esperar a su finalizacion antes de 
+     * cerrar la conexion, la contraseña se cifra antes de ser enviada 
      */ 
-    await conn.query("Insert into usuario (email,pass,rol) values ('"+email+"',aes_encrypt('"+pass+"','contraseniaaes'),'usuario')").then((value) => null);
+    await conn.query("Insert into usuario (email,pass,rol) values ('"+email+"',aes_encrypt"
+    "('"+pass+"','contraseniaaes'),'usuario')").then((value) => null);
     // Cierre de la conexión
     conn.close();
   }
